@@ -130,9 +130,10 @@
                     {% endif %}
                 </td>
                 <td><span class="amount positive">+{{ "%.3f"|format(p.amount_tnd) }} TND</span></td>
-                <td class="text-right">
-                    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/purchases/{{ p.id }}/delete" onsubmit="return confirm('Supprimer cet achat ?')" style="display:inline;">
-                        <button class="btn-icon" title="Supprimer">✕</button>
+                <td class="text-right" style="white-space:nowrap;">
+                    <a href="{{ root_path }}/friends/{{ friend.id }}/purchases/{{ p.id }}/edit" class="btn-icon" title="Modifier cet achat" style="text-decoration:none;margin-right:0.3rem;">✏️</a>
+                    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/purchases/{{ p.id }}/delete" onsubmit="return confirm('⚠️ Êtes-vous sûr de vouloir supprimer cet achat : {{ p.description }} ?\n\nCette action est irréversible.')" style="display:inline;">
+                        <button class="btn-icon" title="Supprimer cet achat">✕</button>
                     </form>
                 </td>
             </tr>
@@ -171,9 +172,10 @@
                 <td><strong>{{ c.description }}</strong></td>
                 <td><span class="badge badge-borrower">{{ c.borrower }}</span></td>
                 <td><span class="amount negative">-{{ "%.3f"|format(c.amount_tnd) }} TND</span></td>
-                <td class="text-right">
-                    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/compensations/{{ c.id }}/delete" onsubmit="return confirm('Supprimer cette compensation ?')" style="display:inline;">
-                        <button class="btn-icon" title="Supprimer">✕</button>
+                <td class="text-right" style="white-space:nowrap;">
+                    <a href="{{ root_path }}/friends/{{ friend.id }}/compensations/{{ c.id }}/edit" class="btn-icon" title="Modifier cette compensation" style="text-decoration:none;margin-right:0.3rem;">✏️</a>
+                    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/compensations/{{ c.id }}/delete" onsubmit="return confirm('⚠️ Êtes-vous sûr de vouloir supprimer cette compensation : {{ c.description }} ?\n\nCette action est irréversible.')" style="display:inline;">
+                        <button class="btn-icon" title="Supprimer cette compensation">✕</button>
                     </form>
                 </td>
             </tr>
@@ -226,9 +228,10 @@
                     {% endif %}
                 </td>
                 <td><span class="amount negative">-{{ "%.3f"|format(r.amount_tnd) }} TND</span></td>
-                <td class="text-right">
-                    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/repayments/{{ r.id }}/delete" onsubmit="return confirm('Supprimer ce remboursement ?')" style="display:inline;">
-                        <button class="btn-icon" title="Supprimer">✕</button>
+                <td class="text-right" style="white-space:nowrap;">
+                    <a href="{{ root_path }}/friends/{{ friend.id }}/repayments/{{ r.id }}/edit" class="btn-icon" title="Modifier ce remboursement" style="text-decoration:none;margin-right:0.3rem;">✏️</a>
+                    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/repayments/{{ r.id }}/delete" onsubmit="return confirm('⚠️ Êtes-vous sûr de vouloir supprimer ce remboursement ?\n\nCette action est irréversible.')" style="display:inline;">
+                        <button class="btn-icon" title="Supprimer ce remboursement">✕</button>
                     </form>
                 </td>
             </tr>

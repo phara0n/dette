@@ -1,12 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Nouvel achat — {{ friend.name }}{% endblock %}
+{% block title %}{% if purchase %}Modifier l'achat{% else %}Nouvel achat{% endif %} — {{ friend.name }}{% endblock %}
 {% block content %}
 
 <div class="form-card">
     <div style="margin-bottom:1.5rem;text-align:center;">
         <span style="font-size:2rem;display:block;margin-bottom:0.2rem;">🛒</span>
-        <h1>Nouvel Achat</h1>
-        <p style="color:var(--text-muted);font-size:0.9rem;">Enregistrer un achat effectué par <strong>{{ friend.name }}</strong></p>
+        <h1>{% if purchase %}Modifier l'achat{% else %}Nouvel Achat{% endif %}</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem;">
+            {% if purchase %}
+                Modifier un achat effectué par <strong>{{ friend.name }}</strong>
+            {% else %}
+                Enregistrer un achat effectué par <strong>{{ friend.name }}</strong>
+            {% endif %}
+        </p>
     </div>
 
     {% if error %}
@@ -16,15 +22,15 @@
     </div>
     {% endif %}
 
-    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/purchases">
+    <form method="post" action="{% if purchase %}{{ root_path }}/friends/{{ friend.id }}/purchases/{{ purchase.id }}/edit{% else %}{{ root_path }}/friends/{{ friend.id }}/purchases{% endif %}">
         <!-- Emprunteur (Segmented Control) -->
         <div class="form-group">
             <label class="form-label">Qui a emprunté / pour qui est cet achat ?</label>
             <div class="segmented-control">
-                <input type="radio" id="borrower-mehdi" name="borrower" value="Mehdi" checked>
+                <input type="radio" id="borrower-mehdi" name="borrower" value="Mehdi" {% if not purchase or purchase.borrower == 'Mehdi' %}checked{% endif %}>
                 <label for="borrower-mehdi">Mehdi</label>
                 
-                <input type="radio" id="borrower-faycal" name="borrower" value="Faycal">
+                <input type="radio" id="borrower-faycal" name="borrower" value="Faycal" {% if purchase and purchase.borrower == 'Faycal' %}checked{% endif %}>
                 <label for="borrower-faycal">Faycal</label>
             </div>
         </div>
@@ -32,22 +38,22 @@
         <!-- Description -->
         <div class="form-group">
             <label class="form-label" for="description">Description de l'achat</label>
-            <input type="text" id="description" name="description" class="form-input" placeholder="Ex: Coque téléphone Amazon, billet d'avion..." required autofocus>
+            <input type="text" id="description" name="description" class="form-input" placeholder="Ex: Coque téléphone Amazon, billet d'avion..." value="{{ purchase.description if purchase else '' }}" required autofocus>
         </div>
 
         <!-- Montant & Devise -->
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label" for="amount">Montant</label>
-                <input type="number" id="amount" name="amount" class="form-input" step="0.01" min="0.01" placeholder="Ex: 49.99" required style="font-family:var(--font-mono);">
+                <input type="number" id="amount" name="amount" class="form-input" step="0.01" min="0.01" placeholder="Ex: 49.99" value="{{ purchase.amount if purchase else '' }}" required style="font-family:var(--font-mono);">
             </div>
             <div class="form-group">
                 <label class="form-label" for="currency">Devise</label>
                 <select id="currency" name="currency" class="form-select" required>
-                    <option value="USD" selected>USD ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="CAD">CAD (C$)</option>
-                    <option value="TND">TND (DT)</option>
+                    <option value="USD" {% if not purchase or purchase.currency == 'USD' %}selected{% endif %}>USD ($)</option>
+                    <option value="EUR" {% if purchase and purchase.currency == 'EUR' %}selected{% endif %}>EUR (€)</option>
+                    <option value="CAD" {% if purchase and purchase.currency == 'CAD' %}selected{% endif %}>CAD (C$)</option>
+                    <option value="TND" {% if purchase and purchase.currency == 'TND' %}selected{% endif %}>TND (DT)</option>
                 </select>
             </div>
         </div>
@@ -55,7 +61,7 @@
         <!-- Date de l'achat -->
         <div class="form-group">
             <label class="form-label" for="purchase_date">Date de l'achat</label>
-            <input type="date" id="purchase_date" name="purchase_date" class="form-input" value="{{ today }}" required>
+            <input type="date" id="purchase_date" name="purchase_date" class="form-input" value="{{ purchase.purchase_date if purchase else today }}" required>
         </div>
 
         <!-- Taux manuel repliable -->
@@ -69,7 +75,7 @@
 
         <!-- Boutons d'action -->
         <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
-            <button type="submit" class="btn btn-primary" style="flex:1;">Enregistrer l'achat</button>
+            <button type="submit" class="btn btn-primary" style="flex:1;">{% if purchase %}Enregistrer les modifications{% else %}Enregistrer l'achat{% endif %}</button>
             <a href="{{ root_path }}/friends/{{ friend.id }}" class="btn btn-secondary">Annuler</a>
         </div>
     </form>

@@ -1,12 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Nouvelle compensation — {{ friend.name }}{% endblock %}
+{% block title %}{% if compensation %}Modifier la compensation{% else %}Nouvelle compensation{% endif %} — {{ friend.name }}{% endblock %}
 {% block content %}
 
 <div class="form-card">
     <div style="margin-bottom:1.5rem;text-align:center;">
         <span style="font-size:2rem;display:block;margin-bottom:0.2rem;">🔧</span>
-        <h1>Nouvelle Compensation</h1>
-        <p style="color:var(--text-muted);font-size:0.9rem;">Enregistrer un service ou une bricole payée pour <strong>{{ friend.name }}</strong></p>
+        <h1>{% if compensation %}Modifier la Compensation{% else %}Nouvelle Compensation{% endif %}</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem;">
+            {% if compensation %}
+                Modifier un service ou une bricole payée pour <strong>{{ friend.name }}</strong>
+            {% else %}
+                Enregistrer un service ou une bricole payée pour <strong>{{ friend.name }}</strong>
+            {% endif %}
+        </p>
     </div>
 
     {% if error %}
@@ -16,15 +22,15 @@
     </div>
     {% endif %}
 
-    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/compensations">
+    <form method="post" action="{% if compensation %}{{ root_path }}/friends/{{ friend.id }}/compensations/{{ compensation.id }}/edit{% else %}{{ root_path }}/friends/{{ friend.id }}/compensations{% endif %}">
         <!-- Qui a rendu le service -->
         <div class="form-group">
             <label class="form-label">Qui a rendu le service / payé ?</label>
             <div class="segmented-control">
-                <input type="radio" id="borrower-mehdi" name="borrower" value="Mehdi" checked>
+                <input type="radio" id="borrower-mehdi" name="borrower" value="Mehdi" {% if not compensation or compensation.borrower == 'Mehdi' %}checked{% endif %}>
                 <label for="borrower-mehdi">Mehdi</label>
                 
-                <input type="radio" id="borrower-faycal" name="borrower" value="Faycal">
+                <input type="radio" id="borrower-faycal" name="borrower" value="Faycal" {% if compensation and compensation.borrower == 'Faycal' %}checked{% endif %}>
                 <label for="borrower-faycal">Faycal</label>
             </div>
         </div>
@@ -32,24 +38,24 @@
         <!-- Description -->
         <div class="form-group">
             <label class="form-label" for="description">Description du service</label>
-            <input type="text" id="description" name="description" class="form-input" placeholder="Ex: Réparation PC, courses supermarché..." required autofocus>
+            <input type="text" id="description" name="description" class="form-input" placeholder="Ex: Réparation PC, courses supermarché..." value="{{ compensation.description if compensation else '' }}" required autofocus>
         </div>
 
         <!-- Montant TND -->
         <div class="form-group">
             <label class="form-label" for="amount_tnd">Valeur du service (en TND)</label>
-            <input type="number" id="amount_tnd" name="amount_tnd" class="form-input" step="0.001" min="0.001" placeholder="Ex: 45.000" required style="font-family:var(--font-mono);">
+            <input type="number" id="amount_tnd" name="amount_tnd" class="form-input" step="0.001" min="0.001" placeholder="Ex: 45.000" value="{{ compensation.amount_tnd if compensation else '' }}" required style="font-family:var(--font-mono);">
         </div>
 
         <!-- Date -->
         <div class="form-group">
             <label class="form-label" for="compensation_date">Date</label>
-            <input type="date" id="compensation_date" name="compensation_date" class="form-input" value="{{ today }}" required>
+            <input type="date" id="compensation_date" name="compensation_date" class="form-input" value="{{ compensation.date if compensation else today }}" required>
         </div>
 
         <!-- Boutons d'action -->
         <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
-            <button type="submit" class="btn btn-primary" style="flex:1;">Enregistrer la compensation</button>
+            <button type="submit" class="btn btn-primary" style="flex:1;">{% if compensation %}Enregistrer les modifications{% else %}Enregistrer la compensation{% endif %}</button>
             <a href="{{ root_path }}/friends/{{ friend.id }}" class="btn btn-secondary">Annuler</a>
         </div>
     </form>

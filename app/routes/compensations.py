@@ -79,3 +79,67 @@ def delete_compensation(friend_id: int, compensation_id: int, db: Session = Depe
     db.delete(compensation)
     db.commit()
     return redirect_to(f"/friends/{friend_id}")
+
+
+@router.get("/{compensation_id}/edit", response_class=HTMLResponse)
+def edit_compensation_form(friend_id: int, compensation_id: int, request: Request, db: Session = Depends(get_db)):
+    friend = db.query(Friend).get(friend_id)
+    if not friend:
+        raise HTTPException(404, "Ami introuvable")
+    compensation = db.query(Compensation).filter(Compensation.id == compensation_id, Compensation.friend_id == friend_id).first()
+    if not compensation:
+        raise HTTPException(404, "Compensation introuvable")
+    return templates.TemplateResponse(request, "compensation_form.html", {
+        "friend": friend,
+        "compensation": compensation,
+        "today": compensation.date.isoformat(),
+        "error": None,
+    })
+
+
+@router.post("/{compensation_id}/edit")
+def update_compensation(
+    friend_id: int,
+    compensation_id: int,
+    request: Request,
+    description: str = Form(...),
+    amount_tnd: float = Form(...),
+    compensation_date: str = Form(...),
+    borrower: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    friend = db.query(Friend).get(friend_id)
+    if not friend:
+        raise HTTPException(404, "Ami introuvable")
+    compensation = db.query(Compensation).filter(Compensation.id == compensation_id, Compensation.friend_id == friend_id).first()
+    if not compensation:
+        raise HTTPException(404, "Compensation introuvable")
+
+    errors = []
+    if not description.strip():
+        errors.append("La description est requise")
+    if amount_tnd <= 0:
+        errors.append("Le montant doit être positif")
+    if borrower not in ("Mehdi", "Faycal"):
+        errors.append("Emprunteur invalide")
+
+    try:
+        c_date = date.fromisoformat(compensation_date)
+    except (ValueError, TypeError):
+        errors.append("Date invalide")
+
+    if errors:
+        return templates.TemplateResponse(request, "compensation_form.html", {
+            "friend": friend,
+            "compensation": compensation,
+            "today": compensation_date,
+            "error": " ".join(errors),
+        }, status_code=400)
+
+    compensation.description = description.strip()
+    compensation.amount_tnd = amount_tnd
+    compensation.date = c_date
+    compensation.borrower = borrower
+    db.commit()
+
+    return redirect_to(f"/friends/{friend_id}")

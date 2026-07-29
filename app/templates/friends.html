@@ -66,7 +66,7 @@
                 <td class="text-right" style="display:flex;justify-content:flex-end;gap:0.5rem;align-items:center;">
                     <a href="{{ root_path }}/friends/{{ item.friend.id }}" class="btn btn-secondary btn-sm">Voir la fiche</a>
                     <button class="btn-icon" title="Modifier le nom" onclick="editFriendName('{{ item.friend.id }}', '{{ item.friend.name }}')">✏️</button>
-                    <form method="post" action="{{ root_path }}/friends/{{ item.friend.id }}/delete" onsubmit="return confirm('Supprimer {{ item.friend.name }} et tout son historique ?')" style="display:inline;">
+                    <form method="post" action="{{ root_path }}/friends/{{ item.friend.id }}/delete" onsubmit="return confirm('⚠️ ATTENTION CRITIQUE !\n\nVoulez-vous vraiment SUPPRIMER l\'ami {{ item.friend.name }} ainsi que TOUT son historique (achats, remboursements, compensations) ?\n\nCette action est irréversible.')" style="display:inline;">
                         <button class="btn-icon" title="Supprimer cet ami">✕</button>
                     </form>
                 </td>
