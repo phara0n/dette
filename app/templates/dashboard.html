@@ -17,18 +17,24 @@
         <div class="kpi-value {% if total_owed > 0 %}positive{% else %}zero{% endif %}">
             {{ "%.3f"|format(total_owed) }} <span style="font-size:1rem;">TND</span>
         </div>
-        <div class="kpi-sub">Somme due par l'ensemble des amis</div>
+        <div class="kpi-sub">Total net dû aux amis</div>
     </div>
 
-    {% for borrower, total in borrower_totals.items() %}
     <div class="card card-kpi">
-        <div class="kpi-label">Dette vers {{ borrower }}</div>
-        <div class="kpi-value {% if total > 0 %}positive{% else %}zero{% endif %}">
-            {{ "%.3f"|format(total) }} <span style="font-size:1rem;">TND</span>
+        <div class="kpi-label">Total Achats Global</div>
+        <div class="kpi-value positive">
+            {{ "%.3f"|format(total_purchases_all) }} <span style="font-size:1rem;">TND</span>
         </div>
-        <div class="kpi-sub">Part de {{ borrower }} sur l'ensemble des amis</div>
+        <div class="kpi-sub">Cumul de tous les achats en TND</div>
     </div>
-    {% endfor %}
+
+    <div class="card card-kpi">
+        <div class="kpi-label">Total Remboursements</div>
+        <div class="kpi-value negative">
+            {{ "%.3f"|format(total_repayments_all) }} <span style="font-size:1rem;">TND</span>
+        </div>
+        <div class="kpi-sub">Cumul des remboursements et compensations</div>
+    </div>
 </div>
 
 <!-- Table des Soldes par Ami -->
@@ -44,9 +50,9 @@
             <tr>
                 <th>Ami</th>
                 <th>Achats</th>
-                <th>Solde Mehdi</th>
-                <th>Solde Fayçal</th>
-                <th class="text-right">Solde Total</th>
+                <th>Total Achats</th>
+                <th>Remboursements</th>
+                <th class="text-right">Solde Net</th>
                 <th></th>
             </tr>
         </thead>
@@ -61,18 +67,12 @@
                 <td>
                     <span class="badge badge-borrower">{{ item.purchases_count }}</span>
                 </td>
-                {% for b in ["Mehdi", "Faycal"] %}
                 <td>
-                    {% set bal = item.borrower_balances[b] %}
-                    {% if bal > 0 %}
-                        <span class="amount positive">+{{ "%.3f"|format(bal) }} TND</span>
-                    {% elif bal < 0 %}
-                        <span class="amount negative">-{{ "%.3f"|format(bal|abs) }} TND</span>
-                    {% else %}
-                        <span class="amount zero">0.000 TND</span>
-                    {% endif %}
+                    <span class="amount positive">+{{ "%.3f"|format(item.total_purchases) }} TND</span>
                 </td>
-                {% endfor %}
+                <td>
+                    <span class="amount negative">-{{ "%.3f"|format(item.total_repayments) }} TND</span>
+                </td>
                 <td class="text-right">
                     {% if item.balance > 0 %}
                         <span class="amount positive" style="font-size:1.05rem;">+{{ "%.3f"|format(item.balance) }} TND</span>

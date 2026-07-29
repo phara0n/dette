@@ -34,14 +34,17 @@ async def create_repayment(
     currency: str = Form("TND"),
     repayment_date: str = Form(...),
     notes: str | None = Form(None),
-    borrower: str = Form(...),
     paid_by: str = Form(...),
+    borrower: str | None = Form(None),
     manual_rate: str | None = Form(None),
     db: Session = Depends(get_db),
 ):
     friend = db.query(Friend).get(friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
+
+    if not borrower:
+        borrower = paid_by
 
     amount_val = amount if amount is not None else amount_tnd
     errors = []

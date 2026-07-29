@@ -17,29 +17,15 @@
     {% endif %}
 
     <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/repayments">
-        <div class="form-row">
-            <!-- Qui a payé -->
-            <div class="form-group">
-                <label class="form-label">Qui a payé ?</label>
-                <div class="segmented-control">
-                    <input type="radio" id="paid-mehdi" name="paid_by" value="Mehdi" checked>
-                    <label for="paid-mehdi">Mehdi</label>
-                    
-                    <input type="radio" id="paid-faycal" name="paid_by" value="Faycal">
-                    <label for="paid-faycal">Faycal</label>
-                </div>
-            </div>
-
-            <!-- Pour réduire la dette de qui -->
-            <div class="form-group">
-                <label class="form-label">Pour quelle dette ?</label>
-                <div class="segmented-control">
-                    <input type="radio" id="for-mehdi" name="borrower" value="Mehdi" checked>
-                    <label for="for-mehdi">Mehdi</label>
-                    
-                    <input type="radio" id="for-faycal" name="borrower" value="Faycal">
-                    <label for="for-faycal">Faycal</label>
-                </div>
+        <!-- Qui a effectué ce remboursement -->
+        <div class="form-group">
+            <label class="form-label">Qui a effectué ce remboursement ?</label>
+            <div class="segmented-control" style="max-width:320px;">
+                <input type="radio" id="paid-mehdi" name="paid_by" value="Mehdi" checked>
+                <label for="paid-mehdi">Mehdi</label>
+                
+                <input type="radio" id="paid-faycal" name="paid_by" value="Faycal">
+                <label for="paid-faycal">Faycal</label>
             </div>
         </div>
 

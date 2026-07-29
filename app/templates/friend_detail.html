@@ -43,32 +43,45 @@
     </div>
 </div>
 
-<!-- Sous-Soldes par Emprunteur (Mehdi & Fayçal) -->
+<!-- KPI Cards Synthese Ami -->
 <div class="grid-kpi mb-3">
-    {% for borrower in BORROWERS %}
-    {% set bal = borrower_balances[borrower] %}
     <div class="card card-kpi">
-        <div class="kpi-label">Dette {{ borrower }}</div>
-        <div class="kpi-value {% if bal > 0 %}positive{% elif bal < 0 %}negative{% else %}zero{% endif %}">
-            {% if bal > 0 %}
-                +{{ "%.3f"|format(bal) }} <span style="font-size:0.9rem;">TND</span>
-            {% elif bal < 0 %}
-                -{{ "%.3f"|format(bal|abs) }} <span style="font-size:0.9rem;">TND</span>
+        <div class="kpi-label">Solde Net</div>
+        <div class="kpi-value {% if balance > 0 %}positive{% elif balance < 0 %}negative{% else %}zero{% endif %}">
+            {% if balance > 0 %}
+                +{{ "%.3f"|format(balance) }} <span style="font-size:0.9rem;">TND</span>
+            {% elif balance < 0 %}
+                -{{ "%.3f"|format(balance|abs) }} <span style="font-size:0.9rem;">TND</span>
             {% else %}
                 0.000 <span style="font-size:0.9rem;">TND</span>
             {% endif %}
         </div>
         <div class="kpi-sub">
-            {% if bal > 0 %}
-                {{ borrower }} doit de l'argent à {{ friend.name }}
-            {% elif bal < 0 %}
-                En avance / Crédit pour {{ borrower }}
+            {% if balance > 0 %}
+                Vous devez de l'argent à {{ friend.name }}
+            {% elif balance < 0 %}
+                En avance / Crédit chez {{ friend.name }}
             {% else %}
-                Compte équilibré
+                Compte parfaitement équilibré
             {% endif %}
         </div>
     </div>
-    {% endfor %}
+
+    <div class="card card-kpi">
+        <div class="kpi-label">Total Achats</div>
+        <div class="kpi-value positive">
+            +{{ "%.3f"|format(friend.total_purchases) }} <span style="font-size:0.9rem;">TND</span>
+        </div>
+        <div class="kpi-sub">Achats effectués par {{ friend.name }}</div>
+    </div>
+
+    <div class="card card-kpi">
+        <div class="kpi-label">Total Remboursements</div>
+        <div class="kpi-value negative">
+            -{{ "%.3f"|format(friend.total_repayments + friend.total_compensations) }} <span style="font-size:0.9rem;">TND</span>
+        </div>
+        <div class="kpi-sub">Remboursements et compensations</div>
+    </div>
 </div>
 
 <!-- Actions Toolbar -->

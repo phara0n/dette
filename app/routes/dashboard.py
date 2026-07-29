@@ -15,23 +15,18 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
 
     friend_balances = []
     for f in friends:
+        total_rep = f.total_repayments + f.total_compensations
         friend_balances.append({
             "friend": f,
             "balance": f.balance,
-            "borrower_balances": {b: f.balance_for(b) for b in BORROWERS},
+            "total_purchases": f.total_purchases,
+            "total_repayments": total_rep,
             "purchases_count": len(f.purchases),
         })
 
-    borrower_totals = {}
-    for borrower in BORROWERS:
-        owed = 0.0
-        for f in friends:
-            bal = f.balance_for(borrower)
-            if bal > 0:
-                owed += bal
-        borrower_totals[borrower] = owed
-
-    total_owed = sum(borrower_totals.values())
+    total_owed = sum(b["balance"] for b in friend_balances if b["balance"] > 0)
+    total_purchases_all = sum(b["total_purchases"] for b in friend_balances)
+    total_repayments_all = sum(b["total_repayments"] for b in friend_balances)
 
     recent_items = []
     recent_purchases = db.query(Purchase).order_by(Purchase.created_at.desc()).limit(5).all()
@@ -86,6 +81,7 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(request, "dashboard.html", {
         "friend_balances": friend_balances,
         "total_owed": total_owed,
-        "borrower_totals": borrower_totals,
+        "total_purchases_all": total_purchases_all,
+        "total_repayments_all": total_repayments_all,
         "recent_items": recent_items,
     })
