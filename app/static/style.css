@@ -348,6 +348,19 @@ h3 {
     text-transform: none;
 }
 
+.rate-badge {
+    display: inline-block;
+    margin-top: 0.2rem;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    background-color: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+
 /* --------------------------------------------------------------------------
    Boutons
    -------------------------------------------------------------------------- */

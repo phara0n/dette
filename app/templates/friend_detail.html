@@ -109,7 +109,13 @@
                 <td><span class="amount" style="font-size:0.85rem;color:var(--text-muted);">{{ p.purchase_date }}</span></td>
                 <td><strong>{{ p.description }}</strong></td>
                 <td><span class="badge badge-borrower">{{ p.borrower }}</span></td>
-                <td><span class="amount">{{ "%.2f"|format(p.amount) }} {{ p.currency }}</span></td>
+                <td>
+                    <span class="amount">{{ "%.2f"|format(p.amount) }} {{ p.currency }}</span>
+                    {% if p.currency != 'TND' %}
+                    {% set p_rate = p.exchange_rate.rate if p.exchange_rate else (p.amount_tnd / p.amount if p.amount > 0 else 0) %}
+                    <span class="rate-badge" title="Taux de conversion au {{ p.purchase_date }}">🔀 1 {{ p.currency }} = {{ "%.4f"|format(p_rate) }} TND</span>
+                    {% endif %}
+                </td>
                 <td><span class="amount positive">+{{ "%.3f"|format(p.amount_tnd) }} TND</span></td>
                 <td class="text-right">
                     <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/purchases/{{ p.id }}/delete" onsubmit="return confirm('Supprimer cet achat ?')" style="display:inline;">
@@ -198,6 +204,10 @@
                 <td>
                     {% if r.currency and r.amount %}
                     <span class="amount">{{ "%.2f"|format(r.amount) }} {{ r.currency }}</span>
+                    {% if r.currency != 'TND' %}
+                    {% set r_rate = r.exchange_rate.rate if r.exchange_rate else (r.amount_tnd / r.amount if r.amount > 0 else 0) %}
+                    <span class="rate-badge" title="Taux de conversion au {{ r.date }}">🔀 1 {{ r.currency }} = {{ "%.4f"|format(r_rate) }} TND</span>
+                    {% endif %}
                     {% else %}
                     <span class="amount">{{ "%.3f"|format(r.amount_tnd) }} TND</span>
                     {% endif %}
