@@ -22,8 +22,6 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
             "purchases_count": len(f.purchases),
         })
 
-    total_owed = sum(b["balance"] for b in friend_balances if b["balance"] > 0)
-
     borrower_totals = {}
     for borrower in BORROWERS:
         owed = 0.0
@@ -32,6 +30,8 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
             if bal > 0:
                 owed += bal
         borrower_totals[borrower] = owed
+
+    total_owed = sum(borrower_totals.values())
 
     recent_items = []
     recent_purchases = db.query(Purchase).order_by(Purchase.created_at.desc()).limit(5).all()

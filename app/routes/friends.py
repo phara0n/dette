@@ -18,7 +18,10 @@ def list_friends(request: Request, db: Session = Depends(get_db)):
             "friend": f,
             "balance": f.balance,
         })
-    total_owed = sum(d["balance"] for d in friend_data if d["balance"] > 0)
+    total_owed = sum(
+        sum(max(0.0, f.balance_for(b)) for b in BORROWERS)
+        for f in friends
+    )
     return templates.TemplateResponse(request, "friends.html", {
         "friends": friend_data,
         "total_owed": total_owed,
