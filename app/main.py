@@ -3,10 +3,10 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from .database import Base, engine
+from .database import init_db
 from .routes import compensations, dashboard, friends, purchases, repayments
 
-Base.metadata.create_all(bind=engine)
+init_db()
 
 root_path = os.getenv("ROOT_PATH", "").strip().rstrip("/")
 

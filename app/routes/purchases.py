@@ -46,7 +46,7 @@ async def create_purchase(
         errors.append("La description est requise")
     if amount <= 0:
         errors.append("Le montant doit être positif")
-    if currency not in ("USD", "EUR"):
+    if currency not in ("USD", "EUR", "CAD", "TND"):
         errors.append("Devise invalide")
     if borrower not in ("Mehdi", "Faycal"):
         errors.append("Emprunteur invalide")

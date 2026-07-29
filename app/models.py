@@ -84,6 +84,9 @@ class Repayment(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     friend_id: Mapped[int] = mapped_column(ForeignKey("friends.id"), nullable=False)
+    amount: Mapped[float | None] = mapped_column(Float, nullable=True)
+    currency: Mapped[str | None] = mapped_column(String(3), nullable=True)
+    exchange_rate_id: Mapped[int | None] = mapped_column(ForeignKey("exchange_rates.id"), nullable=True)
     amount_tnd: Mapped[float] = mapped_column(Float, nullable=False)
     date: Mapped[date] = mapped_column(Date, nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -92,6 +95,7 @@ class Repayment(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     friend: Mapped["Friend"] = relationship(back_populates="repayments")
+    exchange_rate: Mapped["ExchangeRate | None"] = relationship()
 
 
 class Compensation(Base):

@@ -48,12 +48,16 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
 
     recent_repayments = db.query(Repayment).order_by(Repayment.created_at.desc()).limit(5).all()
     for r in recent_repayments:
+        if r.amount and r.currency and r.currency != "TND":
+            amt_str = f"{r.amount} {r.currency} → {r.amount_tnd:.3f} TND"
+        else:
+            amt_str = f"{r.amount_tnd:.3f} TND"
         recent_items.append({
             "type": "remboursement",
             "date": r.date,
             "friend": r.friend.name,
             "description": r.notes or "Remboursement",
-            "amount": f"{r.amount_tnd:.3f} TND",
+            "amount": amt_str,
             "icon": "💰",
             "borrower": r.borrower,
         })

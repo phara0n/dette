@@ -6,6 +6,8 @@ FRANKFURTER_URL = "https://api.frankfurter.dev/v2"
 
 
 async def fetch_rate(from_currency: str, to_currency: str, rate_date: date | None = None) -> float | None:
+    if from_currency == to_currency:
+        return 1.0
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             params = {}
@@ -25,6 +27,9 @@ async def fetch_rate(from_currency: str, to_currency: str, rate_date: date | Non
 
 
 async def get_or_fetch_rate(from_currency: str, to_currency: str, rate_date: date, db) -> float | None:
+    if from_currency == to_currency:
+        return 1.0
+
     from ..models import ExchangeRate
 
     existing = db.query(ExchangeRate).filter(

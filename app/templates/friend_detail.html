@@ -183,6 +183,7 @@
                 <th>Notes</th>
                 <th>Payé par</th>
                 <th>Pour</th>
+                <th>Montant Devise</th>
                 <th>Montant TND</th>
                 <th class="text-right">Action</th>
             </tr>
@@ -194,6 +195,13 @@
                 <td><strong>{{ r.notes or '—' }}</strong></td>
                 <td><span class="badge badge-borrower">{{ r.paid_by }}</span></td>
                 <td><span class="badge badge-borrower">{{ r.borrower }}</span></td>
+                <td>
+                    {% if r.currency and r.amount %}
+                    <span class="amount">{{ "%.2f"|format(r.amount) }} {{ r.currency }}</span>
+                    {% else %}
+                    <span class="amount">{{ "%.3f"|format(r.amount_tnd) }} TND</span>
+                    {% endif %}
+                </td>
                 <td><span class="amount negative">-{{ "%.3f"|format(r.amount_tnd) }} TND</span></td>
                 <td class="text-right">
                     <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/repayments/{{ r.id }}/delete" onsubmit="return confirm('Supprimer ce remboursement ?')" style="display:inline;">

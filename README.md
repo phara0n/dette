@@ -1,13 +1,13 @@
 # 💸 Dette — Gestion de dettes entre amis
 
-**Dette** est une application web moderne, rapide et épurée permettant de gérer facilement les emprunts, achats et remboursements entre amis avec conversion automatique de devises (**USD** / **EUR** → **TND** - Dinar Tunisien).
+**Dette** est une application web moderne, rapide et épurée permettant de gérer facilement les emprunts, achats et remboursements entre amis avec conversion automatique de devises (**USD** / **EUR** / **CAD** / **TND** → **TND** - Dinar Tunisien).
 
 ---
 
 ## 🌟 Fonctionnalités Principales
 
 - **💵 Conversion de devises automatique** :
-  - Saisie des achats en **USD ($)** ou **EUR (€)**.
+  - Saisie des achats et remboursements en **USD ($)**, **EUR (€)**, **CAD (C$)** ou **TND (DT)**.
   - Conversion automatique en **TND** selon le taux de change du jour (via l'API Frankfurter).
   - Option de saisie d'un taux manuel en cas de besoin.
 - **👥 Gestion multi-emprunteurs** :
@@ -15,7 +15,7 @@
   - Modification rapide du nom d'un ami à tout moment.
 - **🔄 3 types de transactions** :
   - 🛒 **Achats** : Ce qu'un ami achète pour vous (augmente la dette).
-  - 💰 **Remboursements** : Ce que vous remboursez à l'ami en TND (réduit la dette).
+  - 💰 **Remboursements** : Ce que vous remboursez à l'ami en devise (USD/EUR/CAD/TND, réduit la dette).
   - 🔧 **Compensations** : Services ou bricoles rendus à l'ami (payés localement, réduisent la dette).
 - **📊 Tableau de bord clair & synthétique** :
   - Vision immédiate du total dû global et des part respectives (Mehdi / Fayçal).
