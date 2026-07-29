@@ -26,35 +26,41 @@ Gérer les emprunts/achats faits par des amis (en USD/EUR), avec conversion auto
 | Colonne | Type | Description |
 |---------|------|-------------|
 | id | INTEGER PK | |
-| from_currency | TEXT | USD, EUR |
+| from_currency | TEXT | USD, EUR, CAD, TND |
 | to_currency | TEXT | TND |
 | rate | REAL | Taux de conversion |
 | date | DATE | Date du taux |
 
-### purchases (Ami → Toi)
+### purchases (Ami → Groupe)
 | Colonne | Type | Description |
 |---------|------|-------------|
 | id | INTEGER PK | |
 | friend_id | FK → friends | |
 | description | TEXT | |
 | amount | REAL | Montant en devise d'origine |
-| currency | TEXT | USD ou EUR |
+| currency | TEXT | USD, EUR, CAD, TND |
 | exchange_rate_id | FK → exchange_rates | |
 | amount_tnd | REAL | Montant converti en TND |
 | purchase_date | DATE | |
+| borrower | TEXT | Mehdi ou Faycal (indicatif) |
 | created_at | DATETIME | |
 
-### repayments (Toi → Ami)
+### repayments (Groupe → Ami)
 | Colonne | Type | Description |
 |---------|------|-------------|
 | id | INTEGER PK | |
 | friend_id | FK → friends | |
-| amount_tnd | REAL | |
+| amount | REAL | Montant en devise d'origine (optionnel) |
+| currency | TEXT | USD, EUR, CAD, TND (optionnel) |
+| exchange_rate_id | FK → exchange_rates | Taux de change (optionnel) |
+| amount_tnd | REAL | Montant converti en TND |
 | date | DATE | |
 | notes | TEXT | |
+| paid_by | TEXT | Mehdi ou Faycal (indicatif) |
+| borrower | TEXT | Mehdi ou Faycal (indicatif) |
 | created_at | DATETIME | |
 
-### compensations (Toi → Ami, services/bricoles)
+### compensations (Groupe → Ami, services/bricoles)
 | Colonne | Type | Description |
 |---------|------|-------------|
 | id | INTEGER PK | |
@@ -62,19 +68,23 @@ Gérer les emprunts/achats faits par des amis (en USD/EUR), avec conversion auto
 | description | TEXT | |
 | amount_tnd | REAL | Ce que tu as payé |
 | date | DATE | |
+| borrower | TEXT | Mehdi ou Faycal (indicatif) |
 | created_at | DATETIME | |
 
 ## Calcul du solde
 ```
-Solde(ami) = Σ purchases.amount_tnd - Σ repayments.amount_tnd - Σ compensations.amount_tnd
+Solde Net (ami) = Σ purchases.amount_tnd - Σ repayments.amount_tnd - Σ compensations.amount_tnd
 ```
-Solde > 0 → tu dois de l'argent à l'ami
-Solde < 0 → l'ami te doit (trop remboursé / trop de compensations)
+Solde > 0 → le groupe doit de l'argent à l'ami
+Solde < 0 → l'ami doit au groupe (en avance / trop remboursé)
 
-## Pages
-- `/` — Dashboard (total dû global, par ami, dernières transactions)
-- `/friends` — Liste des amis
-- `/friends/{id}` — Détail d'un ami (achats, remboursements, compensations, solde)
-- `/friends/{id}/purchase/new` — Ajouter un achat
-- `/friends/{id}/repayment/new` — Ajouter un remboursement
-- `/friends/{id}/compensation/new` — Ajouter une compensation
+## Pages & Routes
+- `/` — Dashboard (total dû global, soldes par ami, dernières transactions)
+- `/friends` — Liste des amis & création d'ami
+- `/friends/{id}` — Fiche détaillée d'un ami (achats, remboursements, compensations, solde)
+- `/friends/{id}/purchases/new` — Ajouter un achat
+- `/friends/{id}/purchases/{id}/edit` — Modifier un achat
+- `/friends/{id}/repayments/new` — Ajouter un remboursement
+- `/friends/{id}/repayments/{id}/edit` — Modifier un remboursement
+- `/friends/{id}/compensations/new` — Ajouter une compensation
+- `/friends/{id}/compensations/{id}/edit` — Modifier une compensation

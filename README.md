@@ -18,6 +18,9 @@
   - 🛒 **Achats** : Ce qu'un ami achète pour le groupe (augmente la dette envers l'ami).
   - 💰 **Remboursements** : Ce qui est remboursé à l'ami en toute devise (réduit la dette).
   - 🔧 **Compensations** : Services ou travaux rendus à l'ami (payés localement, réduisent la dette).
+- **✏️ Édition & Suppression sécurisée** :
+  - Modification intégrale (bouton ✏️) des achats, remboursements et compensations existants.
+  - Confirmation d'avertissement explicite (bouton ✕) avant toute suppression d'ami ou de transaction.
 - **📊 Tableau de bord clair & synthétique** :
   - Synthèse globale : **Total Dû Global**, **Total Achats**, **Total Remboursements**.
   - Tableau récapitulatif des soldes nets par ami.
