@@ -1,0 +1,81 @@
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import HTMLResponse
+from sqlalchemy.orm import Session
+
+from ..database import get_db
+from ..models import BORROWERS, Compensation, Friend, Purchase, Repayment
+from ..templates import templates
+
+router = APIRouter(tags=["dashboard"])
+
+
+@router.get("/", response_class=HTMLResponse)
+def dashboard(request: Request, db: Session = Depends(get_db)):
+    friends = db.query(Friend).order_by(Friend.name).all()
+
+    friend_balances = []
+    for f in friends:
+        friend_balances.append({
+            "friend": f,
+            "balance": f.balance,
+            "borrower_balances": {b: f.balance_for(b) for b in BORROWERS},
+            "purchases_count": len(f.purchases),
+        })
+
+    total_owed = sum(b["balance"] for b in friend_balances if b["balance"] > 0)
+
+    borrower_totals = {}
+    for borrower in BORROWERS:
+        owed = 0.0
+        for f in friends:
+            bal = f.balance_for(borrower)
+            if bal > 0:
+                owed += bal
+        borrower_totals[borrower] = owed
+
+    recent_items = []
+    recent_purchases = db.query(Purchase).order_by(Purchase.created_at.desc()).limit(5).all()
+    for p in recent_purchases:
+        recent_items.append({
+            "type": "achat",
+            "date": p.purchase_date,
+            "friend": p.friend.name,
+            "description": p.description,
+            "amount": f"{p.amount} {p.currency} → {p.amount_tnd:.3f} TND",
+            "icon": "🛒",
+            "borrower": p.borrower,
+        })
+
+    recent_repayments = db.query(Repayment).order_by(Repayment.created_at.desc()).limit(5).all()
+    for r in recent_repayments:
+        recent_items.append({
+            "type": "remboursement",
+            "date": r.date,
+            "friend": r.friend.name,
+            "description": r.notes or "Remboursement",
+            "amount": f"{r.amount_tnd:.3f} TND",
+            "icon": "💰",
+            "borrower": r.borrower,
+        })
+
+    recent_compensations = db.query(Compensation).order_by(Compensation.created_at.desc()).limit(5).all()
+    for c in recent_compensations:
+        recent_items.append({
+            "type": "compensation",
+            "date": c.date,
+            "friend": c.friend.name,
+            "description": c.description,
+            "amount": f"{c.amount_tnd:.3f} TND",
+            "icon": "🔧",
+            "borrower": c.borrower,
+        })
+
+    recent_items.sort(key=lambda x: x["date"], reverse=True)
+    recent_items = recent_items[:10]
+
+    return templates.TemplateResponse(request, "dashboard.html", {
+        "friend_balances": friend_balances,
+        "total_owed": total_owed,
+        "borrower_totals": borrower_totals,
+        "recent_items": recent_items,
+    })

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Nouvel achat — {{ friend.name }}{% endblock %}
+{% block content %}
+
+<div class="form-card">
+    <div style="margin-bottom:1.5rem;text-align:center;">
+        <span style="font-size:2rem;display:block;margin-bottom:0.2rem;">🛒</span>
+        <h1>Nouvel Achat</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem;">Enregistrer un achat effectué par <strong>{{ friend.name }}</strong></p>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-error">
+        <span>⚠️</span>
+        <div>{{ error }}</div>
+    </div>
+    {% endif %}
+
+    <form method="post" action="/friends/{{ friend.id }}/purchases">
+        <!-- Emprunteur (Segmented Control) -->
+        <div class="form-group">
+            <label class="form-label">Qui a emprunté / pour qui est cet achat ?</label>
+            <div class="segmented-control">
+                <input type="radio" id="borrower-mehdi" name="borrower" value="Mehdi" checked>
+                <label for="borrower-mehdi">Mehdi</label>
+                
+                <input type="radio" id="borrower-faycal" name="borrower" value="Faycal">
+                <label for="borrower-faycal">Faycal</label>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label class="form-label" for="description">Description de l'achat</label>
+            <input type="text" id="description" name="description" class="form-input" placeholder="Ex: Coque téléphone Amazon, billet d'avion..." required autofocus>
+        </div>
+
+        <!-- Montant & Devise -->
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="amount">Montant</label>
+                <input type="number" id="amount" name="amount" class="form-input" step="0.01" min="0.01" placeholder="Ex: 49.99" required style="font-family:var(--font-mono);">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="currency">Devise</label>
+                <select id="currency" name="currency" class="form-select" required>
+                    <option value="USD" selected>USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Date de l'achat -->
+        <div class="form-group">
+            <label class="form-label" for="purchase_date">Date de l'achat</label>
+            <input type="date" id="purchase_date" name="purchase_date" class="form-input" value="{{ today }}" required>
+        </div>
+
+        <!-- Taux manuel repliable -->
+        <details>
+            <summary>⚙️ Saisir un taux manuel (Optionnel)</summary>
+            <div class="form-group" style="margin-top:0.6rem;">
+                <label class="form-label" for="manual_rate">Taux de conversion vers TND</label>
+                <input type="number" id="manual_rate" name="manual_rate" class="form-input" step="0.0001" min="0.0001" placeholder="Ex: 3.15 (laisser vide pour conversion auto)">
+            </div>
+        </details>
+
+        <!-- Boutons d'action -->
+        <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
+            <button type="submit" class="btn btn-primary" style="flex:1;">Enregistrer l'achat</button>
+            <a href="/friends/{{ friend.id }}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

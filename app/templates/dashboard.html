@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord — Dette{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Tableau de bord</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem;">Aperçu des dettes globales et répartition entre Mehdi et Fayçal</p>
+    </div>
+    <a href="/friends" class="btn btn-primary">+ Gérer les amis</a>
+</div>
+
+<!-- Grid KPI Top Stats -->
+<div class="grid-kpi">
+    <div class="card card-kpi">
+        <div class="kpi-label">Total Dû Global</div>
+        <div class="kpi-value {% if total_owed > 0 %}positive{% else %}zero{% endif %}">
+            {{ "%.3f"|format(total_owed) }} <span style="font-size:1rem;">TND</span>
+        </div>
+        <div class="kpi-sub">Somme due par l'ensemble des amis</div>
+    </div>
+
+    {% for borrower, total in borrower_totals.items() %}
+    <div class="card card-kpi">
+        <div class="kpi-label">Dette vers {{ borrower }}</div>
+        <div class="kpi-value {% if total > 0 %}positive{% else %}zero{% endif %}">
+            {{ "%.3f"|format(total) }} <span style="font-size:1rem;">TND</span>
+        </div>
+        <div class="kpi-sub">Part de {{ borrower }} sur l'ensemble des amis</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Table des Soldes par Ami -->
+<div class="flex-between mb-2">
+    <h2>Soldes par ami</h2>
+    <span class="badge badge-borrower">{{ friend_balances|length }} ami(s)</span>
+</div>
+
+{% if friend_balances %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Ami</th>
+                <th>Achats</th>
+                <th>Solde Mehdi</th>
+                <th>Solde Fayçal</th>
+                <th class="text-right">Solde Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in friend_balances %}
+            <tr>
+                <td>
+                    <a href="/friends/{{ item.friend.id }}" style="text-decoration:none;color:var(--text-main);font-weight:600;">
+                        {{ item.friend.name }}
+                    </a>
+                </td>
+                <td>
+                    <span class="badge badge-borrower">{{ item.purchases_count }}</span>
+                </td>
+                {% for b in ["Mehdi", "Faycal"] %}
+                <td>
+                    {% set bal = item.borrower_balances[b] %}
+                    {% if bal > 0 %}
+                        <span class="amount positive">+{{ "%.3f"|format(bal) }} TND</span>
+                    {% elif bal < 0 %}
+                        <span class="amount negative">-{{ "%.3f"|format(bal|abs) }} TND</span>
+                    {% else %}
+                        <span class="amount zero">0.000 TND</span>
+                    {% endif %}
+                </td>
+                {% endfor %}
+                <td class="text-right">
+                    {% if item.balance > 0 %}
+                        <span class="amount positive" style="font-size:1.05rem;">+{{ "%.3f"|format(item.balance) }} TND</span>
+                    {% elif item.balance < 0 %}
+                        <span class="amount negative" style="font-size:1.05rem;">-{{ "%.3f"|format(item.balance|abs) }} TND</span>
+                    {% else %}
+                        <span class="amount zero">0.000 TND</span>
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    <a href="/friends/{{ item.friend.id }}" class="btn btn-secondary btn-sm">Détails</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card empty-state">
+    <span style="font-size:2.5rem;display:block;margin-bottom:0.5rem;">👥</span>
+    <h3>Aucun ami enregistré</h3>
+    <p>Commencez par ajouter un ami pour pouvoir enregistrer des achats et des remboursements.</p>
+    <a href="/friends" class="btn btn-primary mt-2" style="margin-top:1rem;">Ajouter un ami</a>
+</div>
+{% endif %}
+
+<!-- Activité Récente -->
+<h2>Activité récente</h2>
+{% if recent_items %}
+<div class="activity-list">
+    {% for item in recent_items %}
+    <div class="activity-item">
+        <div class="activity-left">
+            <div class="activity-icon {% if item.type == 'achat' %}badge-achat{% else %}badge-remboursement{% endif %}">
+                {{ item.icon }}
+            </div>
+            <div class="activity-details">
+                <div class="activity-title">
+                    <strong>{{ item.friend }}</strong> — {{ item.description }}
+                </div>
+                <div class="activity-meta">
+                    <span class="badge badge-{{ item.type }}">{{ item.type }}</span>
+                    {% if item.borrower %}
+                        <span>•</span>
+                        <span class="badge badge-borrower">{{ item.borrower }}</span>
+                    {% endif %}
+                    <span>•</span>
+                    <span>{{ item.date }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="activity-right">
+            <span class="amount {% if item.type == 'achat' %}positive{% else %}negative{% endif %}">
+                {{ item.amount }}
+            </span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card empty-state">
+    <p>Aucune transaction enregistrée pour le moment.</p>
+</div>
+{% endif %}
+
+{% endblock %}

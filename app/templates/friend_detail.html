@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% block title %}{{ friend.name }} — Dette{% endblock %}
+{% block content %}
+
+<!-- Header Profil Ami -->
+<div class="profile-header">
+    <div class="avatar">
+        {{ friend.name[0]|upper }}
+    </div>
+    <div class="profile-info">
+        <div class="profile-name" style="display:flex;align-items:center;gap:0.5rem;">
+            <span>{{ friend.name }}</span>
+            <button class="btn-icon" onclick="toggleEditName()" title="Modifier le nom" style="font-size:0.85rem;padding:0.2rem 0.4rem;">✏️</button>
+        </div>
+        <form id="edit-name-form" method="post" action="/friends/{{ friend.id }}/edit" style="display:none;margin-top:0.4rem;gap:0.4rem;align-items:center;">
+            <input type="text" name="name" value="{{ friend.name }}" class="form-input" style="padding:0.3rem 0.6rem;font-size:0.85rem;max-width:200px;" required>
+            <button type="submit" class="btn btn-primary btn-sm">Enregistrer</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditName()">Annuler</button>
+        </form>
+        <div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.2rem;">Membre depuis {{ friend.created_at.strftime('%Y-%m-%d') if friend.created_at else 'longtemps' }}</div>
+    </div>
+    <script>
+        function toggleEditName() {
+            const form = document.getElementById('edit-name-form');
+            if (form.style.display === 'none') {
+                form.style.display = 'flex';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+    </script>
+    <div style="text-align:right;">
+        <div style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Solde Net Total</div>
+        <div class="profile-balance {% if balance > 0 %}positive{% elif balance < 0 %}negative{% else %}zero{% endif %}">
+            {% if balance > 0 %}
+                +{{ "%.3f"|format(balance) }} TND
+            {% elif balance < 0 %}
+                -{{ "%.3f"|format(balance|abs) }} TND
+            {% else %}
+                0.000 TND
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Sous-Soldes par Emprunteur (Mehdi & Fayçal) -->
+<div class="grid-kpi mb-3">
+    {% for borrower in BORROWERS %}
+    {% set bal = borrower_balances[borrower] %}
+    <div class="card card-kpi">
+        <div class="kpi-label">Dette {{ borrower }}</div>
+        <div class="kpi-value {% if bal > 0 %}positive{% elif bal < 0 %}negative{% else %}zero{% endif %}">
+            {% if bal > 0 %}
+                +{{ "%.3f"|format(bal) }} <span style="font-size:0.9rem;">TND</span>
+            {% elif bal < 0 %}
+                -{{ "%.3f"|format(bal|abs) }} <span style="font-size:0.9rem;">TND</span>
+            {% else %}
+                0.000 <span style="font-size:0.9rem;">TND</span>
+            {% endif %}
+        </div>
+        <div class="kpi-sub">
+            {% if bal > 0 %}
+                {{ borrower }} doit de l'argent à {{ friend.name }}
+            {% elif bal < 0 %}
+                En avance / Crédit pour {{ borrower }}
+            {% else %}
+                Compte équilibré
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Actions Toolbar -->
+<div class="action-toolbar">
+    <a href="/friends/{{ friend.id }}/purchases/new" class="btn btn-danger">
+        <span>🛒</span> + Nouvel Achat
+    </a>
+    <a href="/friends/{{ friend.id }}/repayments/new" class="btn btn-primary">
+        <span>💰</span> + Remboursement
+    </a>
+    <a href="/friends/{{ friend.id }}/compensations/new" class="btn btn-secondary">
+        <span>🔧</span> + Compensation
+    </a>
+</div>
+
+<!-- Table 1: Achats -->
+<div class="flex-between mb-1">
+    <h2>🛒 Achats <span style="font-weight:400;font-size:0.9rem;color:var(--text-muted);">(payés par {{ friend.name }})</span></h2>
+    <span class="badge badge-achat">{{ purchases|length }}</span>
+</div>
+
+{% if purchases %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Pour qui ?</th>
+                <th>Montant Devise</th>
+                <th>Montant TND</th>
+                <th class="text-right">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in purchases %}
+            <tr>
+                <td><span class="amount" style="font-size:0.85rem;color:var(--text-muted);">{{ p.purchase_date }}</span></td>
+                <td><strong>{{ p.description }}</strong></td>
+                <td><span class="badge badge-borrower">{{ p.borrower }}</span></td>
+                <td><span class="amount">{{ "%.2f"|format(p.amount) }} {{ p.currency }}</span></td>
+                <td><span class="amount positive">+{{ "%.3f"|format(p.amount_tnd) }} TND</span></td>
+                <td class="text-right">
+                    <form method="post" action="/friends/{{ friend.id }}/purchases/{{ p.id }}/delete" onsubmit="return confirm('Supprimer cet achat ?')" style="display:inline;">
+                        <button class="btn-icon" title="Supprimer">✕</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card empty-state mb-3">
+    <p>Aucun achat enregistré pour {{ friend.name }}.</p>
+</div>
+{% endif %}
+
+<!-- Table 2: Compensations -->
+<div class="flex-between mb-1">
+    <h2>🔧 Compensations <span style="font-weight:400;font-size:0.9rem;color:var(--text-muted);">(services rendus à {{ friend.name }})</span></h2>
+    <span class="badge badge-compensation">{{ compensations|length }}</span>
+</div>
+
+{% if compensations %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Qui a aidé ?</th>
+                <th>Valeur TND</th>
+                <th class="text-right">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in compensations %}
+            <tr>
+                <td><span class="amount" style="font-size:0.85rem;color:var(--text-muted);">{{ c.date }}</span></td>
+                <td><strong>{{ c.description }}</strong></td>
+                <td><span class="badge badge-borrower">{{ c.borrower }}</span></td>
+                <td><span class="amount negative">-{{ "%.3f"|format(c.amount_tnd) }} TND</span></td>
+                <td class="text-right">
+                    <form method="post" action="/friends/{{ friend.id }}/compensations/{{ c.id }}/delete" onsubmit="return confirm('Supprimer cette compensation ?')" style="display:inline;">
+                        <button class="btn-icon" title="Supprimer">✕</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card empty-state mb-3">
+    <p>Aucune compensation enregistrée.</p>
+</div>
+{% endif %}
+
+<!-- Table 3: Remboursements -->
+<div class="flex-between mb-1">
+    <h2>💰 Remboursements <span style="font-weight:400;font-size:0.9rem;color:var(--text-muted);">(remboursés à {{ friend.name }})</span></h2>
+    <span class="badge badge-remboursement">{{ repayments|length }}</span>
+</div>
+
+{% if repayments %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Notes</th>
+                <th>Payé par</th>
+                <th>Pour</th>
+                <th>Montant TND</th>
+                <th class="text-right">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in repayments %}
+            <tr>
+                <td><span class="amount" style="font-size:0.85rem;color:var(--text-muted);">{{ r.date }}</span></td>
+                <td><strong>{{ r.notes or '—' }}</strong></td>
+                <td><span class="badge badge-borrower">{{ r.paid_by }}</span></td>
+                <td><span class="badge badge-borrower">{{ r.borrower }}</span></td>
+                <td><span class="amount negative">-{{ "%.3f"|format(r.amount_tnd) }} TND</span></td>
+                <td class="text-right">
+                    <form method="post" action="/friends/{{ friend.id }}/repayments/{{ r.id }}/delete" onsubmit="return confirm('Supprimer ce remboursement ?')" style="display:inline;">
+                        <button class="btn-icon" title="Supprimer">✕</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card empty-state mb-3">
+    <p>Aucun remboursement enregistré.</p>
+</div>
+{% endif %}
+
+<!-- Sommaire Financier Récapitulatif -->
+<div class="summary-box">
+    <h3 style="margin-bottom:0.75rem;">Récapitulatif Financier pour {{ friend.name }}</h3>
+    <div class="summary-row">
+        <span>Total Achats</span>
+        <span class="amount positive">+{{ "%.3f"|format(friend.total_purchases) }} TND</span>
+    </div>
+    <div class="summary-row">
+        <span>Total Compensations</span>
+        <span class="amount negative">-{{ "%.3f"|format(friend.total_compensations) }} TND</span>
+    </div>
+    <div class="summary-row">
+        <span>Total Remboursements</span>
+        <span class="amount negative">-{{ "%.3f"|format(friend.total_repayments) }} TND</span>
+    </div>
+    <div class="summary-row">
+        <span>Solde Final Net</span>
+        <span class="amount {% if balance > 0 %}positive{% elif balance < 0 %}negative{% else %}zero{% endif %}">
+            {% if balance > 0 %}
+                +{{ "%.3f"|format(balance) }} TND
+            {% elif balance < 0 %}
+                -{{ "%.3f"|format(balance|abs) }} TND
+            {% else %}
+                0.000 TND
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+{% endblock %}

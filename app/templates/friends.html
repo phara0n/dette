@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Amis — Dette{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Gestion des amis</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem;">Ajoutez vos amis et consultez leur solde net global</p>
+    </div>
+    {% if total_owed > 0 %}
+    <div style="text-align:right;">
+        <div style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Total Dû Global</div>
+        <div class="amount positive" style="font-size:1.4rem;font-weight:700;">
+            {{ "%.3f"|format(total_owed) }} TND
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Card Ajouter un Ami -->
+<div class="card mb-3">
+    <h3 style="margin-bottom:0.8rem;">Ajouter un nouvel ami</h3>
+    <form method="post" action="/friends" style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <input type="text" name="name" class="form-input" placeholder="Nom de l'ami (ex: Ahmed, Youssef...)" required autofocus style="flex:1;min-width:220px;">
+        <button type="submit" class="btn btn-primary">
+            <span>👤</span> Ajouter l'ami
+        </button>
+    </form>
+</div>
+
+<!-- Liste des Amis -->
+<h2>Liste des amis ({{ friends|length }})</h2>
+
+{% if friends %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Ami</th>
+                <th>Solde Net</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in friends %}
+            <tr>
+                <td>
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <div class="avatar" style="width:36px;height:36px;font-size:0.95rem;">
+                            {{ item.friend.name[0]|upper }}
+                        </div>
+                        <a href="/friends/{{ item.friend.id }}" style="text-decoration:none;color:var(--text-main);font-weight:600;font-size:1rem;">
+                            {{ item.friend.name }}
+                        </a>
+                    </div>
+                </td>
+                <td>
+                    {% if item.balance > 0 %}
+                        <span class="amount positive" style="font-size:1.05rem;">+{{ "%.3f"|format(item.balance) }} TND</span>
+                    {% elif item.balance < 0 %}
+                        <span class="amount negative" style="font-size:1.05rem;">-{{ "%.3f"|format(item.balance|abs) }} TND</span>
+                    {% else %}
+                        <span class="amount zero" style="font-size:1.05rem;">0.000 TND</span>
+                    {% endif %}
+                </td>
+                <td class="text-right" style="display:flex;justify-content:flex-end;gap:0.5rem;align-items:center;">
+                    <a href="/friends/{{ item.friend.id }}" class="btn btn-secondary btn-sm">Voir la fiche</a>
+                    <button class="btn-icon" title="Modifier le nom" onclick="editFriendName('{{ item.friend.id }}', '{{ item.friend.name }}')">✏️</button>
+                    <form method="post" action="/friends/{{ item.friend.id }}/delete" onsubmit="return confirm('Supprimer {{ item.friend.name }} et tout son historique ?')" style="display:inline;">
+                        <button class="btn-icon" title="Supprimer cet ami">✕</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function editFriendName(id, currentName) {
+        const newName = prompt('Nouveau nom pour cet ami :', currentName);
+        if (newName && newName.trim() !== currentName && newName.trim() !== '') {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/friends/' + id + '/edit';
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'name';
+            input.value = newName.trim();
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+{% else %}
+<div class="card empty-state">
+    <span style="font-size:2.5rem;display:block;margin-bottom:0.5rem;">👥</span>
+    <h3>Aucun ami enregistré</h3>
+    <p>Utilisez le formulaire ci-dessus pour ajouter votre premier ami.</p>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dette{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        // Restauration du thème sauvegardé ou détection système
+        (function() {
+            const savedTheme = localStorage.getItem('dette-theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header class="navbar">
+            <a href="/" class="navbar-brand">
+                <span class="brand-icon">💸</span>
+                <span>Dette</span>
+            </a>
+            <nav>
+                <ul class="navbar-nav">
+                    <li><a href="/" class="nav-link {% if request.url.path == '/' %}active{% endif %}">Tableau de bord</a></li>
+                    <li><a href="/friends" class="nav-link {% if request.url.path.startswith('/friends') %}active{% endif %}">Amis</a></li>
+                    <li>
+                        <button class="theme-toggle" onclick="toggleTheme()" title="Changer le thème">
+                            <span id="theme-icon">🌙</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        {% if error %}
+        <div class="alert alert-error">
+            <span>⚠️</span>
+            <div>{{ error }}</div>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <script>
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('dette-theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+            updateThemeIcon(theme);
+        });
+    </script>
+</body>
+</html>
