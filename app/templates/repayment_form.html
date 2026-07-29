@@ -16,7 +16,7 @@
     </div>
     {% endif %}
 
-    <form method="post" action="/friends/{{ friend.id }}/repayments">
+    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/repayments">
         <div class="form-row">
             <!-- Qui a payé -->
             <div class="form-group">
@@ -64,7 +64,7 @@
         <!-- Boutons d'action -->
         <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
             <button type="submit" class="btn btn-primary" style="flex:1;">Enregistrer le remboursement</button>
-            <a href="/friends/{{ friend.id }}" class="btn btn-secondary">Annuler</a>
+            <a href="{{ root_path }}/friends/{{ friend.id }}" class="btn btn-secondary">Annuler</a>
         </div>
     </form>
 </div>

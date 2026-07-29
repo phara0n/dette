@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models import Compensation, Friend
-from ..templates import templates
+from ..templates import redirect_to, templates
 
 router = APIRouter(prefix="/friends/{friend_id}/compensations", tags=["compensations"])
 
@@ -68,7 +68,7 @@ def create_compensation(
     db.add(compensation)
     db.commit()
 
-    return RedirectResponse(f"/friends/{friend_id}", 303)
+    return redirect_to(f"/friends/{friend_id}")
 
 
 @router.post("/{compensation_id}/delete")
@@ -78,4 +78,4 @@ def delete_compensation(friend_id: int, compensation_id: int, db: Session = Depe
         raise HTTPException(404, "Compensation introuvable")
     db.delete(compensation)
     db.commit()
-    return RedirectResponse(f"/friends/{friend_id}", 303)
+    return redirect_to(f"/friends/{friend_id}")

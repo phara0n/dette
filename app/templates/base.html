@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Dette{% endblock %}</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ root_path }}/static/style.css">
     <script>
         // Restauration du thème sauvegardé ou détection système
         (function() {
@@ -20,14 +20,14 @@
 <body>
     <div class="container">
         <header class="navbar">
-            <a href="/" class="navbar-brand">
+            <a href="{{ root_path }}/" class="navbar-brand">
                 <span class="brand-icon">💸</span>
                 <span>Dette</span>
             </a>
             <nav>
                 <ul class="navbar-nav">
-                    <li><a href="/" class="nav-link {% if request.url.path == '/' %}active{% endif %}">Tableau de bord</a></li>
-                    <li><a href="/friends" class="nav-link {% if request.url.path.startswith('/friends') %}active{% endif %}">Amis</a></li>
+                    <li><a href="{{ root_path }}/" class="nav-link {% if request.url.path == '/' or request.url.path == '/dette/' %}active{% endif %}">Tableau de bord</a></li>
+                    <li><a href="{{ root_path }}/friends" class="nav-link {% if '/friends' in request.url.path %}active{% endif %}">Amis</a></li>
                     <li>
                         <button class="theme-toggle" onclick="toggleTheme()" title="Changer le thème">
                             <span id="theme-icon">🌙</span>

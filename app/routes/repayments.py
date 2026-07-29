@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models import Friend, Repayment
-from ..templates import templates
+from ..templates import redirect_to, templates
 
 router = APIRouter(prefix="/friends/{friend_id}/repayments", tags=["repayments"])
 
@@ -70,7 +70,7 @@ def create_repayment(
     db.add(repayment)
     db.commit()
 
-    return RedirectResponse(f"/friends/{friend_id}", 303)
+    return redirect_to(f"/friends/{friend_id}")
 
 
 @router.post("/{repayment_id}/delete")
@@ -80,4 +80,4 @@ def delete_repayment(friend_id: int, repayment_id: int, db: Session = Depends(ge
         raise HTTPException(404, "Remboursement introuvable")
     db.delete(repayment)
     db.commit()
-    return RedirectResponse(f"/friends/{friend_id}", 303)
+    return redirect_to(f"/friends/{friend_id}")

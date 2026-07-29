@@ -16,7 +16,7 @@
     </div>
     {% endif %}
 
-    <form method="post" action="/friends/{{ friend.id }}/purchases">
+    <form method="post" action="{{ root_path }}/friends/{{ friend.id }}/purchases">
         <!-- Emprunteur (Segmented Control) -->
         <div class="form-group">
             <label class="form-label">Qui a emprunté / pour qui est cet achat ?</label>
@@ -68,7 +68,7 @@
         <!-- Boutons d'action -->
         <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
             <button type="submit" class="btn btn-primary" style="flex:1;">Enregistrer l'achat</button>
-            <a href="/friends/{{ friend.id }}" class="btn btn-secondary">Annuler</a>
+            <a href="{{ root_path }}/friends/{{ friend.id }}" class="btn btn-secondary">Annuler</a>
         </div>
     </form>
 </div>

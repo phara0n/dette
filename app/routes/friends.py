@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models import BORROWERS, Compensation, Friend, Purchase, Repayment
-from ..templates import templates
+from ..templates import redirect_to, templates
 
 router = APIRouter(prefix="/friends", tags=["friends"])
 
@@ -35,7 +35,7 @@ def create_friend(name: str = Form(...), db: Session = Depends(get_db)):
         raise HTTPException(400, "Cet ami existe déjà")
     db.add(friend)
     db.commit()
-    return RedirectResponse("/friends", 303)
+    return redirect_to("/friends")
 
 
 @router.post("/{friend_id}/delete")
@@ -45,7 +45,7 @@ def delete_friend(friend_id: int, db: Session = Depends(get_db)):
         raise HTTPException(404, "Ami introuvable")
     db.delete(friend)
     db.commit()
-    return RedirectResponse("/friends", 303)
+    return redirect_to("/friends")
 
 
 @router.post("/{friend_id}/edit")
@@ -61,7 +61,8 @@ def update_friend(friend_id: int, name: str = Form(...), db: Session = Depends(g
         raise HTTPException(400, "Un autre ami porte déjà ce nom")
     friend.name = new_name
     db.commit()
-    return RedirectResponse(f"/friends/{friend_id}", 303)
+    return redirect_to(f"/friends/{friend_id}")
+
 
 
 

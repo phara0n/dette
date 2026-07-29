@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -6,7 +7,9 @@ from .routes import compensations, dashboard, friends, purchases, repayments
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Dette - Gestion de dettes")
+root_path = os.getenv("ROOT_PATH", "")
+
+app = FastAPI(title="Dette - Gestion de dettes", root_path=root_path)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 

@@ -7,7 +7,7 @@
         <h1>Tableau de bord</h1>
         <p style="color:var(--text-muted);font-size:0.9rem;">Aperçu des dettes globales et répartition entre Mehdi et Fayçal</p>
     </div>
-    <a href="/friends" class="btn btn-primary">+ Gérer les amis</a>
+    <a href="{{ root_path }}/friends" class="btn btn-primary">+ Gérer les amis</a>
 </div>
 
 <!-- Grid KPI Top Stats -->
@@ -54,7 +54,7 @@
         {% for item in friend_balances %}
             <tr>
                 <td>
-                    <a href="/friends/{{ item.friend.id }}" style="text-decoration:none;color:var(--text-main);font-weight:600;">
+                    <a href="{{ root_path }}/friends/{{ item.friend.id }}" style="text-decoration:none;color:var(--text-main);font-weight:600;">
                         {{ item.friend.name }}
                     </a>
                 </td>
@@ -83,7 +83,7 @@
                     {% endif %}
                 </td>
                 <td class="text-right">
-                    <a href="/friends/{{ item.friend.id }}" class="btn btn-secondary btn-sm">Détails</a>
+                    <a href="{{ root_path }}/friends/{{ item.friend.id }}" class="btn btn-secondary btn-sm">Détails</a>
                 </td>
             </tr>
         {% endfor %}
@@ -95,7 +95,7 @@
     <span style="font-size:2.5rem;display:block;margin-bottom:0.5rem;">👥</span>
     <h3>Aucun ami enregistré</h3>
     <p>Commencez par ajouter un ami pour pouvoir enregistrer des achats et des remboursements.</p>
-    <a href="/friends" class="btn btn-primary mt-2" style="margin-top:1rem;">Ajouter un ami</a>
+    <a href="{{ root_path }}/friends" class="btn btn-primary mt-2" style="margin-top:1rem;">Ajouter un ami</a>
 </div>
 {% endif %}
 

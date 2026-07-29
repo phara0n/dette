@@ -20,7 +20,7 @@
 <!-- Card Ajouter un Ami -->
 <div class="card mb-3">
     <h3 style="margin-bottom:0.8rem;">Ajouter un nouvel ami</h3>
-    <form method="post" action="/friends" style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+    <form method="post" action="{{ root_path }}/friends" style="display:flex;gap:0.75rem;flex-wrap:wrap;">
         <input type="text" name="name" class="form-input" placeholder="Nom de l'ami (ex: Ahmed, Youssef...)" required autofocus style="flex:1;min-width:220px;">
         <button type="submit" class="btn btn-primary">
             <span>👤</span> Ajouter l'ami
@@ -49,7 +49,7 @@
                         <div class="avatar" style="width:36px;height:36px;font-size:0.95rem;">
                             {{ item.friend.name[0]|upper }}
                         </div>
-                        <a href="/friends/{{ item.friend.id }}" style="text-decoration:none;color:var(--text-main);font-weight:600;font-size:1rem;">
+                        <a href="{{ root_path }}/friends/{{ item.friend.id }}" style="text-decoration:none;color:var(--text-main);font-weight:600;font-size:1rem;">
                             {{ item.friend.name }}
                         </a>
                     </div>
@@ -64,9 +64,9 @@
                     {% endif %}
                 </td>
                 <td class="text-right" style="display:flex;justify-content:flex-end;gap:0.5rem;align-items:center;">
-                    <a href="/friends/{{ item.friend.id }}" class="btn btn-secondary btn-sm">Voir la fiche</a>
+                    <a href="{{ root_path }}/friends/{{ item.friend.id }}" class="btn btn-secondary btn-sm">Voir la fiche</a>
                     <button class="btn-icon" title="Modifier le nom" onclick="editFriendName('{{ item.friend.id }}', '{{ item.friend.name }}')">✏️</button>
-                    <form method="post" action="/friends/{{ item.friend.id }}/delete" onsubmit="return confirm('Supprimer {{ item.friend.name }} et tout son historique ?')" style="display:inline;">
+                    <form method="post" action="{{ root_path }}/friends/{{ item.friend.id }}/delete" onsubmit="return confirm('Supprimer {{ item.friend.name }} et tout son historique ?')" style="display:inline;">
                         <button class="btn-icon" title="Supprimer cet ami">✕</button>
                     </form>
                 </td>
@@ -82,7 +82,7 @@
         if (newName && newName.trim() !== currentName && newName.trim() !== '') {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '/friends/' + id + '/edit';
+            form.action = '{{ root_path }}/friends/' + id + '/edit';
             const input = document.createElement('input');
             input.type = 'hidden';
             input.name = 'name';

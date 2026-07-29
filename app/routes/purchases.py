@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import ExchangeRate, Friend, Purchase
 from ..services.exchange import get_or_fetch_rate
-from ..templates import templates
+from ..templates import redirect_to, templates
 
 router = APIRouter(prefix="/friends/{friend_id}/purchases", tags=["purchases"])
 
@@ -115,7 +115,7 @@ async def create_purchase(
     db.add(purchase)
     db.commit()
 
-    return RedirectResponse(f"/friends/{friend_id}", 303)
+    return redirect_to(f"/friends/{friend_id}")
 
 
 @router.post("/{purchase_id}/delete")
@@ -125,4 +125,4 @@ def delete_purchase(friend_id: int, purchase_id: int, db: Session = Depends(get_
         raise HTTPException(404, "Achat introuvable")
     db.delete(purchase)
     db.commit()
-    return RedirectResponse(f"/friends/{friend_id}", 303)
+    return redirect_to(f"/friends/{friend_id}")
