@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -11,7 +12,8 @@ root_path = os.getenv("ROOT_PATH", "")
 
 app = FastAPI(title="Dette - Gestion de dettes", root_path=root_path)
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+static_dir = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 app.include_router(friends.router)
 app.include_router(purchases.router)
