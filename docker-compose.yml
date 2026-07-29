@@ -4,6 +4,9 @@ services:
     container_name: dette
     ports:
       - "8000:8000"
+    environment:
+      - ROOT_PATH=${ROOT_PATH:-}
     volumes:
       - ./data:/app/data
     restart: unless-stopped
+

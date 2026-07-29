@@ -94,7 +94,26 @@ L'application est entièrement conteneurisée pour un déploiement simple sur VP
 docker-compose up -d --build
 ```
 
-L'application sera accessible sur le port `8000` ou derrière un proxy inverse Nginx / Traefik.
+L'application sera accessible sur le port `8000`.
+
+### 🌐 Déploiement sous un sous-dossier (Subpath VPS)
+
+Si l'application est hébergée sous un sous-dossier (ex: `https://domain.com/dette/`), définissez la variable d'environnement `ROOT_PATH` lors du lancement ou dans votre fichier `.env` / `docker-compose.yml` :
+
+```bash
+ROOT_PATH=/dette docker-compose up -d --build
+```
+
+**Configuration Nginx minimale pour un sous-dossier :**
+```nginx
+location /dette/ {
+    proxy_pass http://127.0.0.1:8000/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Prefix /dette;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
 
 ---
 

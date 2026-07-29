@@ -8,7 +8,7 @@ from .routes import compensations, dashboard, friends, purchases, repayments
 
 Base.metadata.create_all(bind=engine)
 
-root_path = os.getenv("ROOT_PATH", "")
+root_path = os.getenv("ROOT_PATH", "").strip().rstrip("/")
 
 app = FastAPI(title="Dette - Gestion de dettes", root_path=root_path)
 
