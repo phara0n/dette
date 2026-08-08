@@ -13,7 +13,7 @@ router = APIRouter(prefix="/friends/{friend_id}/compensations", tags=["compensat
 
 @router.get("/new", response_class=HTMLResponse)
 def new_compensation_form(friend_id: int, request: Request, db: Session = Depends(get_db)):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     today = date.today().isoformat()
@@ -34,7 +34,7 @@ def create_compensation(
     borrower: str = Form(...),
     db: Session = Depends(get_db),
 ):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
 
@@ -83,7 +83,7 @@ def delete_compensation(friend_id: int, compensation_id: int, db: Session = Depe
 
 @router.get("/{compensation_id}/edit", response_class=HTMLResponse)
 def edit_compensation_form(friend_id: int, compensation_id: int, request: Request, db: Session = Depends(get_db)):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     compensation = db.query(Compensation).filter(Compensation.id == compensation_id, Compensation.friend_id == friend_id).first()
@@ -108,7 +108,7 @@ def update_compensation(
     borrower: str = Form(...),
     db: Session = Depends(get_db),
 ):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     compensation = db.query(Compensation).filter(Compensation.id == compensation_id, Compensation.friend_id == friend_id).first()

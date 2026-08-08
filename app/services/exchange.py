@@ -43,6 +43,15 @@ async def get_or_fetch_rate(from_currency: str, to_currency: str, rate_date: dat
 
     rate = await fetch_rate(from_currency, to_currency, rate_date)
     if rate is None:
+        rate = await fetch_rate(from_currency, to_currency, date.today())
+    if rate is None:
+        # Fallback to the latest available rate in the DB for this currency pair
+        latest_db_rate = db.query(ExchangeRate).filter(
+            ExchangeRate.from_currency == from_currency,
+            ExchangeRate.to_currency == to_currency,
+        ).order_by(ExchangeRate.date.desc()).first()
+        if latest_db_rate:
+            return latest_db_rate.rate
         return None
 
     db_rate = ExchangeRate(from_currency=from_currency, to_currency=to_currency, rate=rate, date=rate_date)

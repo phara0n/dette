@@ -14,7 +14,7 @@ router = APIRouter(prefix="/friends/{friend_id}/purchases", tags=["purchases"])
 
 @router.get("/new", response_class=HTMLResponse)
 def new_purchase_form(friend_id: int, request: Request, db: Session = Depends(get_db)):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     today = date.today().isoformat()
@@ -37,7 +37,7 @@ async def create_purchase(
     manual_rate: str | None = Form(None),
     db: Session = Depends(get_db),
 ):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
 
@@ -130,7 +130,7 @@ def delete_purchase(friend_id: int, purchase_id: int, db: Session = Depends(get_
 
 @router.get("/{purchase_id}/edit", response_class=HTMLResponse)
 def edit_purchase_form(friend_id: int, purchase_id: int, request: Request, db: Session = Depends(get_db)):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     purchase = db.query(Purchase).filter(Purchase.id == purchase_id, Purchase.friend_id == friend_id).first()
@@ -157,7 +157,7 @@ async def update_purchase(
     manual_rate: str | None = Form(None),
     db: Session = Depends(get_db),
 ):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     purchase = db.query(Purchase).filter(Purchase.id == purchase_id, Purchase.friend_id == friend_id).first()

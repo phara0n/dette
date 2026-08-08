@@ -43,7 +43,7 @@ def create_friend(name: str = Form(...), db: Session = Depends(get_db)):
 
 @router.post("/{friend_id}/delete")
 def delete_friend(friend_id: int, db: Session = Depends(get_db)):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     db.delete(friend)
@@ -53,7 +53,7 @@ def delete_friend(friend_id: int, db: Session = Depends(get_db)):
 
 @router.post("/{friend_id}/edit")
 def update_friend(friend_id: int, name: str = Form(...), db: Session = Depends(get_db)):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     new_name = name.strip()
@@ -71,7 +71,7 @@ def update_friend(friend_id: int, name: str = Form(...), db: Session = Depends(g
 
 @router.get("/{friend_id}", response_class=HTMLResponse)
 def friend_detail(friend_id: int, request: Request, db: Session = Depends(get_db)):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
 

@@ -14,7 +14,7 @@ router = APIRouter(prefix="/friends/{friend_id}/repayments", tags=["repayments"]
 
 @router.get("/new", response_class=HTMLResponse)
 def new_repayment_form(friend_id: int, request: Request, db: Session = Depends(get_db)):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     today = date.today().isoformat()
@@ -39,7 +39,7 @@ async def create_repayment(
     manual_rate: str | None = Form(None),
     db: Session = Depends(get_db),
 ):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
 
@@ -141,7 +141,7 @@ def delete_repayment(friend_id: int, repayment_id: int, db: Session = Depends(ge
 
 @router.get("/{repayment_id}/edit", response_class=HTMLResponse)
 def edit_repayment_form(friend_id: int, repayment_id: int, request: Request, db: Session = Depends(get_db)):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     repayment = db.query(Repayment).filter(Repayment.id == repayment_id, Repayment.friend_id == friend_id).first()
@@ -170,7 +170,7 @@ async def update_repayment(
     manual_rate: str | None = Form(None),
     db: Session = Depends(get_db),
 ):
-    friend = db.query(Friend).get(friend_id)
+    friend = db.get(Friend, friend_id)
     if not friend:
         raise HTTPException(404, "Ami introuvable")
     repayment = db.query(Repayment).filter(Repayment.id == repayment_id, Repayment.friend_id == friend_id).first()
